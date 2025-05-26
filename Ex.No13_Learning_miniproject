@@ -1,79 +1,77 @@
-# Ex.No: 13 Learning – Use Supervised Learning  
-
-### DATE:                                                                            
+# Purchasing Intention Classifier
+### DATE: 13.05.2025                                                                       
 ### REGISTER NUMBER : 212222040118
-
 ### AIM: 
-To write a program to train the classifier for a Medicine Recommendation System using Supervised Learning (SVM algorithm).
+To implement a ml project on purchasing intention classifier
+### Algorithm:
+Start the program.
 
-###  Algorithm:
-1.Start the program.
+Import necessary libraries and load the dataset using pandas.
 
-2.Import the required libraries (pandas, sklearn, etc.).
+Encode categorical and boolean columns into numeric format using LabelEncoder.
 
-3.Load the dataset containing symptoms and diseases.
+Split the dataset into features (X) and target variable (y = Revenue).
 
-4.Preprocess the data (remove nulls, encode values).
+Scale the feature values using StandardScaler to normalize the data.
 
-5.Split the data into training and testing sets.
+Split the data into training and testing sets using train_test_split() with 80-20 ratio.
 
-6.Train the Support Vector Machine (SVM) classifier using the training data.
+Train a Random Forest Classifier using the training data and predict outcomes for the test data.
 
-7.Predict the disease for given input symptoms using the trained model.
-
-8.Recommend suitable medicines based on the predicted disease.
-
-9.Display the prediction and medicine suggestions.
-
-10.End the program.
-
-### Program:
+Evaluate the model using accuracy score and classification report, then predict one test sample and stop the program.
+# Program:
 ```
-from flask import Flask, request, render_template
-import numpy as np
+# Step 1: Import libraries
 import pandas as pd
-import pickle
-app = Flask(__name__)
-# Load trained SVM model and required datasets
-model = pickle.load(open('model/svc.pkl', 'rb'))
-description = pd.read_csv("datasets/description.csv")
-precautions = pd.read_csv("datasets/precautions_df.csv")
-medications = pd.read_csv('datasets/medications.csv')
-diets = pd.read_csv("datasets/diets.csv")
-workout = pd.read_csv("datasets/workout_df.csv")
-# Mapping of symptoms to indexes and disease labels
-symptoms_dict = {'itching': 0, 'skin_rash': 1, 'nodal_skin_eruptions': 2, 'continuous_sneezing': 3, ...}
-diseases_list = {15: 'Fungal infection', 4: 'Allergy', 16: 'GERD', ...}
-# Predict disease based on user symptoms
-def predict_disease(symptoms):
-    input_vector = np.zeros(len(symptoms_dict))
-    for symptom in symptoms:
-        if symptom in symptoms_dict:
-            input_vector[symptoms_dict[symptom]] = 1
-    return diseases_list[model.predict([input_vector])[0]]
-# Fetch additional details for predicted disease
-def get_info(disease):
-    desc = description[description['Disease'] == disease]['Description'].values[0]
-    prec = precautions[precautions['Disease'] == disease].iloc[0, 1:].tolist()
-    meds = medications[medications['Disease'] == disease]['Medication'].tolist()
-    diet = diets[diets['Disease'] == disease]['Diet'].tolist()
-    work = workout[workout['disease'] == disease]['workout'].tolist()
-    return desc, prec, meds, diet, work
-@app.route('/', methods=['GET', 'POST'])
-def index():
-    if request.method == 'POST':
-        user_input = request.form.get('symptoms')
-        symptoms = [s.strip() for s in user_input.split(',')]
-        disease = predict_disease(symptoms)
-        desc, prec, meds, diet, work = get_info(disease)
-        return render_template('index.html', predicted_disease=disease, dis_des=desc, my_precautions=prec, medications=meds, my_diet=diet, workout=work)
-    return render_template('index.html')
-if __name__ == '__main__':
-    app.run(debug=True)
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import LabelEncoder, StandardScaler
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import accuracy_score, classification_report
+
+# Step 2: Load dataset from UCI (fresh version)
+df = pd.read_csv("/content/online_shoppers_intention.csv")
+
+print("Data loaded successfully.")
+
+# Step 3: Encode categorical features
+categorical_cols = df.select_dtypes(include=['object', 'bool']).columns
+for col in categorical_cols:
+    df[col] = LabelEncoder().fit_transform(df[col])
+
+# Step 4: Feature-target split
+X = df.drop("Revenue", axis=1)
+y = df["Revenue"]
+
+# Step 5: Scale features
+scaler = StandardScaler()
+X_scaled = scaler.fit_transform(X)
+
+# Step 6: Train-test split
+X_train, X_test, y_train, y_test = train_test_split(
+    X_scaled, y, test_size=0.2, random_state=42, stratify=y
+)
+
+# Step 7: Train a simple classifier
+clf = RandomForestClassifier(random_state=42)
+clf.fit(X_train, y_train)
+
+# Step 8: Evaluate model
+y_pred = clf.predict(X_test)
+print("Accuracy:", accuracy_score(y_test, y_pred))
+print("\nClassification Report:\n", classification_report(y_test, y_pred))
+
+# Step 9: Predict on one test sample
+sample = X_test[0].reshape(1, -1)
+prediction = clf.predict(sample)
+print("Test Prediction:", prediction[0])
+
 ```
-### OUTPUT:
-![Screenshot 2025-05-13 103209](https://github.com/user-attachments/assets/49b13ca9-2000-4f25-9f86-3f5f42b1186e)
-![Screenshot 2025-05-13 103320](https://github.com/user-attachments/assets/7b039801-d06e-4431-a8d5-a122bc0ff7c9)
+
+# Output:
+![image](https://github.com/user-attachments/assets/215fa4e7-ffe7-46c9-bcb2-43e7f2846fec)
+
+
+
 
 ### Result:
-Thus the system was trained successfully and the prediction was carried out.
+The ML based project implemented sucessfully.
