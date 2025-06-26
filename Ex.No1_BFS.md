@@ -4,7 +4,7 @@
 ### AIM: 
 To write a python program to implement Breadth first Search. 
 ### Algorithm:
-1. Start the programa
+1. Start the program
 2. Create the graph by using adjacency list representation
 3. Define a function bfs and take the set “visited” is empty and “queue” is empty
 4. Search start with initial node and add the node to visited and queue.
